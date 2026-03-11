@@ -1,0 +1,8 @@
+os-concepts:
+  type: Book
+  title: Operating System Concepts
+  author: ["Abraham Silberschatz", "Peter B. Galvin", "Greg Gagne"]
+  publisher: Laurie Rosatone
+  edition: 10
+  serial-number:
+    isbn: 9781119320913
