@@ -1,4 +1,4 @@
-#import "@samminhch/callouts:0.1.0": answer, important, question, task
+#import "@local/callouts:0.1.0": answer, important, question, task
 #let problem(number, body) = question(title: [= Problem #number], body)
 
 = Notes

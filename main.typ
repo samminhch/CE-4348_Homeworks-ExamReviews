@@ -1,6 +1,6 @@
 #import "@local/templates:0.2.1": assignment
 
-#let homework-num = 6
+#let homework-num = "Exam 1 Review" 
 #show: assignment.with(
   title: if type(homework-num) == int {"Assignment #" + str(homework-num)} else {homework-num},
   course: (

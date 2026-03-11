@@ -1,6 +1,10 @@
-#import "@samminhch/callouts:0.1.0": answer, important, question, task
-#import "@preview/codly:1.3.0": *
+#import "@local/callouts:0.1.0": answer, important, question, task
 #import "@preview/fletcher:0.5.8" as fletcher: diagram, edge, node
+#import "@preview/codly:1.3.0": *
+#show: codly-init
+
+#import "@preview/codly-languages:0.1.10": *
+#codly(languages: codly-languages)
 
 #let problem(number, body) = [
   #figure(
@@ -172,7 +176,7 @@ $
 ]
 
 #figure(
-  image("../assets/assets/data-task-parallelism.png", width: 40%),
+  image("../assets/data-task-parallelism.png", width: 40%),
   caption: [Data and task parallelism@os-concepts[Ch. 4.2, p. 165]],
 ) <figure:data-task-parallelism>
 
