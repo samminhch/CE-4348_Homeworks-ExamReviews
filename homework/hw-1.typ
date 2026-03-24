@@ -1,5 +1,5 @@
 #import "@local/callouts:0.1.0": question, answer, task
-#let problem(number, body) = question(title: [= Problem #number], body)
+#import "common.typ": problem
 
 #problem("1.3")[
   What is the main difficulty that a programmer must overcome in writing an operating system for a real-time environment?

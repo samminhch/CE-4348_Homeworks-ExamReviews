@@ -1,5 +1,5 @@
 #import "@local/callouts:0.1.0": answer, important, question, task
-#let problem(number, body) = question(title: [= Problem #number], body)
+#import "common.typ": problem
 
 = Notes
 

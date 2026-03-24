@@ -1,5 +1,5 @@
 #import "@local/callouts:0.1.0": question, answer, task, important
-#let problem(number, body) = question(title: [= Problem #number], body)
+#import "common.typ": problem
 
 #problem("3.1")[
   Using the program shown in @listing:3.1, explain what the output would be at @3.1:A

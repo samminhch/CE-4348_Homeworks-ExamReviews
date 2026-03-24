@@ -1,42 +1,30 @@
-#import "@local/callouts:0.1.0": answer, important, question, task
-#import "@preview/fletcher:0.5.8" as fletcher: diagram, edge, node
+#import "@local/callouts:0.1.0": answer
+#import "common.typ": problem
+
+// Code Preview
 #import "@preview/codly:1.3.0": *
 #show: codly-init
 
 #import "@preview/codly-languages:0.1.10": *
 #codly(languages: codly-languages)
 
-#let problem(number, body) = [
-  #figure(
-    kind: "Problem",
-    supplement: [Problem],
-    numbering: n => number,
-    [
-      #set align(left)
-      #set enum(numbering: "(A)")
-      #question(title: [= Problem #number], body)
-    ],
-  )
-  #label("problem:" + str(number))
-]
-
 #problem("4.1")[
-  Provide three programming examples in which multi-threading provides better
+  Provide three programming examples in which multithreading provides better
   performance than a single-threaded solution
 ]
 
 #answer[
   From @os-concepts[Ch. 4.1, p. 160]:
   - An application that creates photo thumbnails from a collection of images
-    uses multi-threading to generate thumbnails for each image
-  - Web browser uses multi-threading: one to display content, and one to retrieve
+    uses multithreading to generate thumbnails for each image
+  - Web browser uses multithreading: one to display content, and one to retrieve
     data from the network
   - A word processor may use multiple threads to display content, responding to
     user keystrokes, and to perform spelling / grammar checking
 ]
 
 #problem("4.2")[
-  Using AmDahl's Law, calculate the speedup gain of an application that has a
+  Using Amdahl's Law, calculate the speedup gain of an application that has a
   60% parallel component for...
   + Two processing cores
   + Four processing cores
