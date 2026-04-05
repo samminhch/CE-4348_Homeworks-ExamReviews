@@ -4,7 +4,6 @@
 // Code Preview
 #import "@preview/codly:1.3.0": *
 #show: codly-init
-
 #import "@preview/codly-languages:0.1.10": *
 #codly(languages: codly-languages)
 
