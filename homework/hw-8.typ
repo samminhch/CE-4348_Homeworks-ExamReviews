@@ -1,5 +1,5 @@
 #import "@local/callouts:0.1.0": answer, important, question, task
-#import "common.typ": problem
+#import "common.typ": code, problem
 
 // Code listings
 #import "@preview/codly:1.3.0": *
@@ -13,11 +13,11 @@
   your answer.
 ]
 
-The term *busy waiting* (spinlock) is when processes must continuously request to
-enter its critical section (looping the `acquire()` function)@os-concepts[Sec.
-  6.5]. This can be avoided with the use of semaphores, that temporarily puts
-the waiting process to sleep, and waking it up once the lock becomes available
-@os-concepts[Sec. 6.6].
+The term *busy waiting* (spinlock) is when processes must continuously request
+to enter its critical section (looping the `acquire()`
+function)@os-concepts[Sec. 6.5]. This can be avoided with the use of semaphores,
+that temporarily puts the waiting process to sleep, and waking it up once the
+lock becomes available @os-concepts[Sec. 6.6].
 
 Other types of waits include *blocking* (process sleeping until the awaited
 method finishes, or timeout), *deadlocks* (when one or more processes are
@@ -219,11 +219,46 @@ _probably_ free, and if it isn't, then it doesn't need to waste resources with a
     array and print the result
 ]
 
+The outputs are fairly inconsistent with one another, and this is because a race
+condition over the file pointer's `offset`. This is happening every time each
+thread wants to write to `datafile`. The source code can be seen in
+@listing:no-lock-src and the outputs can be seen in @listing:no-lock-outputs
+
+
 #task[
   Repeat the previous part, but use `thread_lock` to protect the writing section
   of threads
 ]
 
+There's no ```c thread_lock()``` function, but there's
+```c pthread_mutex_lock(&mutex)``` and ```c pthread_mutex_unlock(&mutex)```. The
+implementation can be seen in @listing:lock-src and the outputs can be seen in
+@listing:lock-outputs
+
 #pagebreak()
 #counter(heading).step()
 #bibliography("../references.yaml")
+= Appendix
+#{
+  show figure: set block(breakable: true)
+  [
+    #figure(
+      code("../projects/hw8/src/no_lock.c", title-full: false),
+      caption: [Source code for the programming assignment],
+    )<listing:no-lock-src>
+    #pagebreak()
+    #figure(
+      code("../projects/hw8/no-lock_out.txt", title-full: false),
+      caption: [Output of @listing:no-lock-src ran three times],
+    )<listing:no-lock-outputs>
+    #figure(
+      code("../projects/hw8/src/lock.c", title-full: false),
+      caption: [Source code for the programming assignment],
+    )<listing:lock-src>
+    #pagebreak()
+    #figure(
+      code("../projects/hw8/lock_out.txt", title-full: false),
+      caption: [Output of @listing:no-lock-src ran three times],
+    )<listing:lock-outputs>
+  ]
+}

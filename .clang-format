@@ -30,7 +30,7 @@ IndentAccessModifiers: true
 IncludeBlocks: Regroup
 IndentCaseLabels: true
 IndentPPDirectives: BeforeHash
-IndentWidth: 4
+IndentWidth: 2
 InsertBraces: true
 InsertNewlineAtEOF: false
 MaxEmptyLinesToKeep: 1
@@ -48,5 +48,5 @@ SpaceBeforeRangeBasedForLoopColon: true
 SpaceBeforeSquareBrackets: false
 SpaceInEmptyBlock: false
 SpacesBeforeTrailingComments: 2
-TabWidth: 4
+TabWidth: 2
 ...
