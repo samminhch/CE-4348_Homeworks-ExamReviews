@@ -1,8 +1,10 @@
 #include <pthread.h>
+#include <semaphore.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 const size_t ARR_SIZE = 25;
+sem_t semaphore;
 void *f1(void *arg);
 void *f2(void *arg);
 
@@ -17,6 +19,7 @@ int main() {
   fp2 = fp1;
 
   // Write to `datafile`
+  sem_init(&semaphore, 0, 1);
   pthread_t thread_1, thread_2;
 
   pthread_create(&thread_1, NULL, f1, (void *) fp1);
@@ -54,6 +57,7 @@ int main() {
 }
 
 void *f1(void *arg) {
+  sem_wait(&semaphore);
   FILE *fp = (FILE *) arg;
   int arr[ARR_SIZE][ARR_SIZE];
 
@@ -64,10 +68,12 @@ void *f1(void *arg) {
     }
     fprintf(fp, "\n");
   }
+  sem_post(&semaphore);
   return NULL;
 }
 
 void *f2(void *arg) {
+  sem_wait(&semaphore);
   FILE *fp = (FILE *) arg;
   int arr[ARR_SIZE][ARR_SIZE];
 
@@ -77,5 +83,6 @@ void *f2(void *arg) {
       fprintf(fp, "%d ", arr[r][c]);
     }
   }
+  sem_post(&semaphore);
   return NULL;
 }

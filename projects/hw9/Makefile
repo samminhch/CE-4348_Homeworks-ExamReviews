@@ -1,7 +1,7 @@
 CC:=clang
 CFLAGS:=-Wall -Wextra
 
-all: main
+all: bin/main
 
 bin/%: build/%.o
 	@mkdir -p bin
