@@ -1,5 +1,7 @@
 build/
 bin/
-projects/*/assets
-projects/*/tests
+projects/*/assets/
+projects/*/tests/
+
 *.zip
+datafile

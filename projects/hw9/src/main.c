@@ -82,6 +82,7 @@ void *f2(void *arg) {
       arr[r][c] = 2;
       fprintf(fp, "%d ", arr[r][c]);
     }
+    fprintf(fp, "\n");
   }
   sem_post(&semaphore);
   return NULL;
