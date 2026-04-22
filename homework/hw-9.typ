@@ -26,7 +26,7 @@ used to achieve mutual exclusion without the need to disable interrupts.
   single, uninterruptible unit@os-concepts[Sec. 6.4.2]
 
 #problem("6.4")[
-  Show that, if the ```c wait() ``` and ```c signal() ``` semaphore operations
+  Show that, if the ```c wait()``` and ```c signal()``` semaphore operations
   are not executed atomically, then mutual exclusion may be violated
 ]
 
@@ -102,6 +102,7 @@ for the output of the program ran three times
 = Appendix
 #[
   #show figure: set block(breakable: true)
+  #set text(size: 0.70em)
   #figure(
     code("../projects/hw9/src/main.c", title-full: false),
     caption: [Source code for the programming assignment],
