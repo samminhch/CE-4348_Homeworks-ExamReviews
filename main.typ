@@ -1,6 +1,6 @@
 #import "@local/templates:0.2.3": assignment
 
-#let homework-num = 10
+#let homework-num = 11
 #show: assignment.with(
   title: if type(homework-num) == int or type(homework-num) == float {
     "Assignment #" + str(homework-num)
@@ -27,7 +27,12 @@
 )
 
 #if type(homework-num) == int or type(homework-num) == float {
-  include "homework/hw-" + str(homework-num) + ".typ"
+  let num-str = str(homework-num)
+  include (
+    "homework/hw-"
+      + if num-str.len() == 1 { "0" + num-str } else { num-str }
+      + ".typ"
+  )
 } else {
   include "homework/" + lower(homework-num).replace(" ", "-") + ".typ"
 }
