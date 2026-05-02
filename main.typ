@@ -1,8 +1,10 @@
 #import "@local/templates:0.2.3": assignment
 
-#let homework-num = 11
+#let homework-num = sys.inputs.at("hw-number", default: 11)
+#let is-numeric(n) = type(n) == int or type(n) == float or regex("\\d+") in n
+
 #show: assignment.with(
-  title: if type(homework-num) == int or type(homework-num) == float {
+  title: if is-numeric(homework-num) {
     "Assignment #" + str(homework-num)
   } else { homework-num },
   course: (
@@ -26,7 +28,7 @@
   ),
 )
 
-#if type(homework-num) == int or type(homework-num) == float {
+#if is-numeric(homework-num) {
   let num-str = str(homework-num)
   include (
     "homework/hw-"
