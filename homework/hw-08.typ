@@ -1,12 +1,6 @@
 #import "@local/callouts:0.1.0": answer, important, question, task
 #import "common.typ": code, problem
 
-// Code listings
-#import "@preview/codly:1.3.0": *
-#show: codly-init
-#import "@preview/codly-languages:0.1.10": *
-#codly(languages: codly-languages)
-
 #problem("6.2")[
   What is the meaning of the term busy waiting? What other kinds of waiting are
   there in an operating system? Can busy waiting be avoided altogether? Explain

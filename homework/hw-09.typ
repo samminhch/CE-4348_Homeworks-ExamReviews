@@ -1,13 +1,6 @@
 #import "@local/callouts:0.1.0": answer, important, question, task
 #import "common.typ": code, problem
 
-// Code listings
-#import "@preview/codly:1.3.0": *
-#show: codly-init
-#import "@preview/codly-languages:0.1.10": *
-#codly(languages: codly-languages)
-
-
 #problem("6.1")[
   In Section 6.4, we mentioned that disabling interrupts frequently can affect
   the system's clock. Explain why this can occur and how such effects can be

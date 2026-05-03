@@ -1,141 +1,93 @@
 #let lru(refs, frame-size) = {
-  let timeline = ()
-  let faults = range(refs.len()).map(_ => false)
-  for (index, ref) in refs.enumerate() {
-    // The last value is the most recently used, the first is least used
-    let current-frames = if index == 0 { () } else { timeline.at(index - 1) }
+  let (timeline, faults, frames) = ((), (), ())
 
-    if ref in current-frames {
-      // Move the page to be the most-recently used
-      let _ = current-frames.remove(current-frames.position(f => f == ref))
+  for ref in refs {
+    let hit = ref in frames
+    if hit {
+      // Re-order: Move hit to the end (most recent)
+      frames = frames.filter(f => f != ref) + (ref,)
     } else {
-      // There's a fault!
-      faults.at(index) = true
-      // Evict the least-recently used reference
-      if current-frames.len() == frame-size {
-        let _ = current-frames.remove(0)
-      }
+      // Remove the least-recent frame (least-recent)
+      if frames.len() >= frame-size { frames = frames.slice(1) }
+      frames.push(ref)
     }
-    current-frames.push(ref)
-
-    timeline.push(current-frames)
+    timeline.push(frames)
+    faults.push(not hit)
   }
   (timeline: timeline, faults: faults)
 }
 
 #let fifo(refs, frame-size) = {
-  let timeline = ()
-  let faults = range(refs.len()).map(_ => false)
-  for (index, ref) in refs.enumerate() {
-    // The last value is the most recently used, the first is least used
-    let current-frames = if index == 0 { () } else { timeline.at(index - 1) }
-
-    if ref not in current-frames {
-      faults.at(index) = true
-      if current-frames.len() == frame-size {
-        let _ = current-frames.remove(0)
-      }
-      current-frames.push(ref)
+  let (timeline, faults, frames) = ((), (), ())
+  for ref in refs {
+    let hit = ref in frames
+    if not hit {
+      if frames.len() >= frame-size { frames = frames.slice(1) }
+      frames.push(ref)
     }
-
-    timeline.push(current-frames)
+    timeline.push(frames)
+    faults.push(not hit)
   }
   (timeline: timeline, faults: faults)
 }
 
 #let clock(refs, frame-size) = {
-  let timeline = ()
-  let faults = range(refs.len()).map(_ => false)
+  let (timeline, faults, frames, ptr) = ((), (), (), 0)
 
-  // Internal state to persist across references
-  let current-frames = () // Will store pairs of (page: int, ref-bit: int)
-  let pointer = 0
-
-  for (index, ref) in refs.enumerate() {
-    let is-fault = false
-
-    // Check if the page is already in memory
-    let existing-idx = current-frames.position(f => f.page == ref)
-
-    if existing-idx != none {
-      // Hit: Set the reference bit to 1
-      current-frames.at(existing-idx).ref-bit = 1
+  for ref in refs {
+    let hit-idx = frames.position(f => f.page == ref)
+    if hit-idx != none {
+      frames.at(hit-idx).ref-bit = 1
+      faults.push(false)
     } else {
-      // Miss: Page Fault
-      is-fault = true
-      faults.at(index) = true
-
-      if current-frames.len() < frame-size {
-        // Space available: Just add the page with ref-bit 1
-        current-frames.push((page: ref, ref-bit: 1))
+      faults.push(true)
+      if frames.len() < frame-size {
+        frames.push((page: ref, ref-bit: 1))
       } else {
-        // Memory full: Perform Clock replacement
-        let found = false
-        while not found {
-          if current-frames.at(pointer).ref-bit == 0 {
-            // Replace this page
-            current-frames.at(pointer) = (page: ref, ref-bit: 1)
-            found = true
-            // Move pointer for next time
-            pointer = calc.rem(pointer + 1, frame-size)
-          } else {
-            // Give second chance: Clear bit and move pointer
-            current-frames.at(pointer).ref-bit = 0
-            pointer = calc.rem(pointer + 1, frame-size)
-          }
+        // Step through the clock
+        while frames.at(ptr).ref-bit == 1 {
+          frames.at(ptr).ref-bit = 0
+          ptr = calc.rem(ptr + 1, frame-size)
         }
+        frames.at(ptr) = (page: ref, ref-bit: 1)
+        ptr = calc.rem(ptr + 1, frame-size)
       }
     }
-
-    // Save a snapshot of just the page numbers for the timeline
-    timeline.push(current-frames.map(f => f.page))
+    timeline.push(frames.map(f => f.page))
   }
-
   (timeline: timeline, faults: faults)
 }
 
 #let optimal(refs, frame-size) = {
-  let timeline = ()
-  let faults = ()
-  let current-frames = ()
+  let (timeline, faults, frames) = ((), (), ())
 
   for (index, ref) in refs.enumerate() {
-    let is-fault = false
-
-    if ref not in current-frames {
-      is-fault = true // Page Fault
-
-      if current-frames.len() < frame-size {
-        current-frames.push(ref)
+    let hit = ref in frames
+    if not hit {
+      if frames.len() < frame-size {
+        frames.push(ref)
       } else {
-        // Optimal Logic: Find the page needed furthest in the future
-        let future-refs = refs.slice(index + 1)
-        let max-dist = -1
-        let replace-idx = 0
+        // Find index with furthest next use
+        let future = refs.slice(index + 1)
+        let distances = frames.map(f => {
+          let pos = future.position(r => r == f)
+          if pos == none { float.inf } else { pos }
+        })
 
-        for (i, frame) in current-frames.enumerate() {
-          let dist = future-refs.position(r => r == frame)
-
-          if dist == none {
-            // Page is NEVER used again. Perfect candidate for eviction.
-            replace-idx = i
-            break // We can't get a distance longer than infinity
-          } else if dist > max-dist {
-            max-dist = dist
-            replace-idx = i
-          }
-        }
-
-        // Functionally update the frame in place
-        current-frames = current-frames
+        // Find the index of the maximum distance
+        let replace-idx = distances
           .enumerate()
-          .map(((i, v)) => if i == replace-idx { ref } else { v })
+          // sort the distances
+          .sorted(key: it => it.last())
+          // get the largest distance
+          .last()
+          // get the index
+          .first()
+        frames.at(replace-idx) = ref
       }
     }
-
-    timeline.push(current-frames)
-    faults.push(is-fault)
+    timeline.push(frames)
+    faults.push(not hit)
   }
-
   (timeline: timeline, faults: faults)
 }

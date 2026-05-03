@@ -1,12 +1,6 @@
 #import "@local/callouts:0.1.0": answer
 #import "common.typ": problem
 
-// Code Preview
-#import "@preview/codly:1.3.0": *
-#show: codly-init
-#import "@preview/codly-languages:0.1.10": *
-#codly(languages: codly-languages)
-
 #problem("4.1")[
   Provide three programming examples in which multithreading provides better
   performance than a single-threaded solution
@@ -248,10 +242,6 @@ $
 
 #problem("4.19")[
   What would be the output from the program at labels `C` and `P`
-  #codly(highlights: (
-    (line: 15, start: 5, fill: green, tag: [C], label: <4.19-C>),
-    (line: 19, start: 5, fill: green, tag: [P], label: <4.19-P>),
-  ))
   #figure(
     caption: [Program for @problem:4.19],
     ```c
@@ -272,11 +262,11 @@ $
         pthread_attr_init(&attr);
         pthread_create(&tid,&attr,runner,NULL);
         pthread_join(tid, NULL);
-        printf("CHILD: value = %d\n",value);
+        printf("CHILD: value = %d\n",value); // C
       }
       else if (pid > 0) { /* parent process*/
         wait (NULL);
-        printf("PARENT: value = %d\n",value);
+        printf("PARENT: value = %d\n",value); // P
       }
     }
     void *runner(void *param) {
@@ -358,87 +348,92 @@ $
 #bibliography("../references.yaml", title: "References")
 
 = Appendix
-#codly(header: [Listing for @problem:4.22 ])
-```c
-#include <pthread.h>
-#include <stddef.h>
-#include <stdio.h>
+#{
+  show figure: set block(breakable: true)
+  figure(
+    ```c
+    #include <pthread.h>
+    #include <stddef.h>
+    #include <stdio.h>
 
-  double average;
-  int minimum, maximum;
+      double average;
+      int minimum, maximum;
 
-  typedef struct {
-          const int *data;
-          const size_t size;
-  } vec_t;
+      typedef struct {
+              const int *data;
+              const size_t size;
+      } vec_t;
 
-  void *calc_avg(void *params);
-  void *calc_min(void *params);
-  void *calc_max(void *params);
+      void *calc_avg(void *params);
+      void *calc_min(void *params);
+      void *calc_max(void *params);
 
-  int main() {
-      const int nums[] = {90, 81, 78, 95, 79, 72, 85};
-      const vec_t data = {.data = nums, .size = sizeof(nums) / sizeof(nums[0])};
-      // Create the threads
-      pthread_t avg_thread, min_thread, max_thread;
-      pthread_create(&avg_thread, NULL, calc_avg, (void *) &data);
-      pthread_create(&min_thread, NULL, calc_min, (void *) &data);
-      pthread_create(&max_thread, NULL, calc_max, (void *) &data);
+      int main() {
+          const int nums[] = {90, 81, 78, 95, 79, 72, 85};
+          const vec_t data = {.data = nums, .size = sizeof(nums) / sizeof(nums[0])};
+          // Create the threads
+          pthread_t avg_thread, min_thread, max_thread;
+          pthread_create(&avg_thread, NULL, calc_avg, (void *) &data);
+          pthread_create(&min_thread, NULL, calc_min, (void *) &data);
+          pthread_create(&max_thread, NULL, calc_max, (void *) &data);
 
-      // Wait for threads to finish
-      pthread_join(avg_thread, NULL);
-      pthread_join(min_thread, NULL);
-      pthread_join(max_thread, NULL);
+          // Wait for threads to finish
+          pthread_join(avg_thread, NULL);
+          pthread_join(min_thread, NULL);
+          pthread_join(max_thread, NULL);
 
-      // Print out results!
-      printf("The average value is %.2f\n", average);
-      printf("The minimum value is %d\n", minimum);
-      printf("The maximum value is %d\n", maximum);
-      return 0;
-  }
-
-  void *calc_avg(void *params) {
-      vec_t *vec = (vec_t *) params;
-
-      float sum = 0;
-      for (size_t i = 0; i < vec->size; i++) {
-          sum += vec->data[i];
+          // Print out results!
+          printf("The average value is %.2f\n", average);
+          printf("The minimum value is %d\n", minimum);
+          printf("The maximum value is %d\n", maximum);
+          return 0;
       }
-      average = sum / vec->size;
-      return NULL;
-  }
 
-  void *calc_min(void *params) {
-      vec_t *vec = (vec_t *) params;
+      void *calc_avg(void *params) {
+          vec_t *vec = (vec_t *) params;
 
-      if (vec->size == 0) {
+          float sum = 0;
+          for (size_t i = 0; i < vec->size; i++) {
+              sum += vec->data[i];
+          }
+          average = sum / vec->size;
           return NULL;
       }
 
-      int min = vec->data[0];
-      for (size_t i = 1; i < vec->size; i++) {
-          if (vec->data[i] < min) {
-              min = vec->data[i];
+      void *calc_min(void *params) {
+          vec_t *vec = (vec_t *) params;
+
+          if (vec->size == 0) {
+              return NULL;
           }
-      }
-      minimum = min;
-      return NULL;
-  }
 
-  void *calc_max(void *params) {
-      vec_t *vec = (vec_t *) params;
-
-      if (vec->size == 0) {
+          int min = vec->data[0];
+          for (size_t i = 1; i < vec->size; i++) {
+              if (vec->data[i] < min) {
+                  min = vec->data[i];
+              }
+          }
+          minimum = min;
           return NULL;
       }
 
-      int max = vec->data[0];
-      for (size_t i = 1; i < vec->size; i++) {
-          if (vec->data[i] > max) {
-              max = vec->data[i];
+      void *calc_max(void *params) {
+          vec_t *vec = (vec_t *) params;
+
+          if (vec->size == 0) {
+              return NULL;
           }
+
+          int max = vec->data[0];
+          for (size_t i = 1; i < vec->size; i++) {
+              if (vec->data[i] > max) {
+                  max = vec->data[i];
+              }
+          }
+          maximum = max;
+          return NULL;
       }
-      maximum = max;
-      return NULL;
-  }
-```
+    ```,
+    caption: [For @problem:4.22],
+  )
+}

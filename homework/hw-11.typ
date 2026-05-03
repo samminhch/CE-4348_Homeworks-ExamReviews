@@ -2,14 +2,6 @@
 #import "@preview/unify:0.7.1": num, qty
 #import "/projects/hw11/algorithms.typ": *
 #import "@preview/lovelace:0.3.1": pseudocode-list
-#set raw(theme: "../evergarden-summer.tmTheme")
-#show raw.where(block: true): it => block(
-  fill: rgb("#f5efe6"),
-  stroke: 1pt + rgb("#2b3034"),
-  inset: 8pt,
-  radius: 5pt,
-  text(fill: rgb("#2b3034"), it),
-)
 
 #let sep = line(length: 100%)
 #let symbols = (
@@ -191,7 +183,7 @@ The hardware functions required were mentioned in
 @figure:10.1:page-fault-procedure:
 
 - Page table with (in)valid bit
-- Secondary stroage (swap space)
+- Secondary storage (swap space)
 - Instruction restart capability
 - Memory management unit and TLB
 - Modification/dirty bit

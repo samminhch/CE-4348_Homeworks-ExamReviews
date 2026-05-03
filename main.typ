@@ -28,11 +28,19 @@
   ),
 )
 
+#set raw(theme: "evergarden-winter.tmTheme")
+#show raw.where(block: true): it => block(
+  fill: rgb("#1e2528"),
+  inset: 8pt,
+  radius: 5pt,
+  text(fill: rgb("#f8f9e8"), it),
+)
+
 #if is-numeric(homework-num) {
   let num-str = str(homework-num)
   include (
     "homework/hw-"
-      + if num-str.len() == 1 { "0" + num-str } else { num-str }
+      + if homework-num < 10 { "0" + num-str } else { num-str }
       + ".typ"
   )
 } else {
